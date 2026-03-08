@@ -3,11 +3,11 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
 
 export const DashboardLayout = () => {
   const { user } = useAuth();
+  const location = useLocation();
 
   if (!user) return <Navigate to="/login" replace />;
 
@@ -27,7 +27,7 @@ export const DashboardLayout = () => {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              key={location?.pathname}
+              key={location.pathname}
             >
               <Outlet />
             </motion.div>
