@@ -50,7 +50,6 @@ let nextId = 5;
 // ─── Component ───────────────────────────────────────────
 const AdminUsers = () => {
   const { user } = useAuth();
-  if (user?.role !== "admin") return <Navigate to="/dashboard" replace />;
 
   const [users, setUsers] = useState<MockUser[]>(INITIAL_USERS);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -64,6 +63,8 @@ const AdminUsers = () => {
   const [formWorkspaces, setFormWorkspaces] = useState<string[]>([]);
   const [formReports, setFormReports] = useState<string[]>([]);
   const [expandedWs, setExpandedWs] = useState<string[]>([]);
+
+  if (user?.role !== "admin") return <Navigate to="/dashboard" replace />;
 
   const resetForm = () => {
     setFormName("");
