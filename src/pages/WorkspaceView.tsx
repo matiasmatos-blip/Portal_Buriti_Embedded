@@ -36,7 +36,7 @@ const WorkspaceView = () => {
       </motion.div>
 
       <motion.div
-        className="mt-8 rounded-xl border border-border bg-card overflow-hidden"
+        className="mt-8 rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm overflow-hidden shadow-card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
@@ -47,12 +47,12 @@ const WorkspaceView = () => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-[500px] text-center px-8">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-4">
               <MonitorPlay className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-lg font-semibold text-foreground">Power BI Embedded</h3>
             <p className="text-sm text-muted-foreground mt-2 max-w-md">
-              Aqui será incorporado o relatório Power BI do workspace <strong>{workspace.name}</strong>. 
+              Aqui será incorporado o relatório Power BI do workspace <strong>{workspace.name}</strong>.
               Configure a integração com o Power BI Embedded API para exibir os dashboards.
             </p>
           </div>
