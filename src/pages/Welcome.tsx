@@ -12,7 +12,7 @@ const features = [
   {
     icon: Star,
     title: "Favoritos",
-    description: "Marque seus relatórios mais utilizados com uma estrela para acessá-los rapidamente.",
+    description: "Marque seus relatórios mais utilizados com uma estrela para acessá-los rapidamente pelo menu lateral.",
   },
   {
     icon: ShieldCheck,
@@ -27,10 +27,10 @@ const features = [
 ];
 
 const Welcome = () => {
-  const { user, getVisibleWorkspaces, isFavorite } = useAuth();
+  const { user, getVisibleWorkspaces, getFavoriteReports } = useAuth();
   const navigate = useNavigate();
   const workspaces = getVisibleWorkspaces();
-  const favoriteWorkspaces = workspaces.filter((ws) => isFavorite(ws.id));
+  const favoriteReports = getFavoriteReports();
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
@@ -53,8 +53,8 @@ const Welcome = () => {
         </p>
       </motion.div>
 
-      {/* Favorites quick access */}
-      {favoriteWorkspaces.length > 0 && (
+      {/* Favorite reports quick access */}
+      {favoriteReports.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,16 +62,16 @@ const Welcome = () => {
         >
           <div className="flex items-center gap-2 mb-4">
             <Star className="h-4 w-4 text-primary fill-primary" />
-            <h2 className="text-lg font-semibold text-foreground">Favoritos</h2>
+            <h2 className="text-lg font-semibold text-foreground">Seus Favoritos</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {favoriteWorkspaces.map((ws, i) => (
+            {favoriteReports.map((report, i) => (
               <motion.button
-                key={ws.id}
+                key={report.id}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 + i * 0.04 }}
-                onClick={() => navigate(`/workspace/${ws.id}`)}
+                onClick={() => navigate(`/workspace/${report.workspaceId}/report/${report.id}`)}
                 className="group relative flex items-center gap-3 p-4 rounded-2xl border border-border/60 bg-card shadow-card hover:shadow-card-hover transition-all duration-300 text-left overflow-hidden"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/[0.04] to-transparent rounded-2xl" />
@@ -79,8 +79,11 @@ const Welcome = () => {
                   <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center shrink-0">
                     <BarChart3 className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="font-semibold text-foreground text-sm">{ws.name}</span>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary ml-auto transition-colors" />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-semibold text-foreground text-sm block truncate">{report.name}</span>
+                    <span className="text-[10px] text-muted-foreground">{report.workspaceName}</span>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0 transition-colors" />
                 </div>
               </motion.button>
             ))}
@@ -147,7 +150,7 @@ const Welcome = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground text-sm">{ws.name}</h3>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">Relatórios e dashboards</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{ws.reports.length} relatórios</p>
                   </div>
                 </div>
                 <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />

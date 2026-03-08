@@ -1,4 +1,4 @@
-import { TrendingUp, DollarSign, Building2, Megaphone, Users, Settings, LogOut, LayoutDashboard, Star } from "lucide-react";
+import { TrendingUp, DollarSign, Building2, Megaphone, Users, Settings, LogOut, LayoutDashboard, Star, FileBarChart } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
@@ -24,9 +24,9 @@ const iconMap: Record<string, React.ElementType> = {
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { user, logout, getVisibleWorkspaces, isFavorite } = useAuth();
+  const { user, logout, getVisibleWorkspaces, getFavoriteReports } = useAuth();
   const workspaces = getVisibleWorkspaces();
-  const favoriteWorkspaces = workspaces.filter((ws) => isFavorite(ws.id));
+  const favoriteReports = getFavoriteReports();
 
   const roleLabel: Record<string, string> = {
     admin: "Administrador",
@@ -70,7 +70,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Favorites */}
-        {favoriteWorkspaces.length > 0 && (
+        {favoriteReports.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-widest font-bold px-3 mb-1">
               {!collapsed && (
@@ -82,30 +82,29 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {favoriteWorkspaces.map((ws, i) => {
-                  const Icon = iconMap[ws.icon] || Building2;
-                  return (
-                    <motion.div
-                      key={ws.id}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.03 }}
-                    >
-                      <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                          <NavLink
-                            to={`/workspace/${ws.id}`}
-                            activeClassName="gradient-brand text-primary-foreground shadow-brand font-semibold"
-                            className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
-                          >
-                            <Icon className="h-4 w-4 mr-2 shrink-0" />
-                            {!collapsed && <span>{ws.name}</span>}
-                          </NavLink>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </motion.div>
-                  );
-                })}
+                {favoriteReports.map((report, i) => (
+                  <motion.div
+                    key={report.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                  >
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={`/workspace/${report.workspaceId}/report/${report.id}`}
+                          activeClassName="gradient-brand text-primary-foreground shadow-brand font-semibold"
+                          className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
+                        >
+                          <FileBarChart className="h-4 w-4 mr-2 shrink-0" />
+                          {!collapsed && (
+                            <span className="truncate text-xs">{report.name}</span>
+                          )}
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </motion.div>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

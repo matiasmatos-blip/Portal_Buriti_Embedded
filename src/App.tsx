@@ -8,6 +8,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import Login from "./pages/Login";
 import Welcome from "./pages/Welcome";
 import WorkspaceView from "./pages/WorkspaceView";
+import ReportView from "./pages/ReportView";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Welcome />} />
               <Route path="/workspace/:id" element={<WorkspaceView />} />
+              <Route path="/workspace/:id/report/:reportId" element={<ReportView />} />
               <Route path="/admin/users" element={<AdminUsers />} />
             </Route>
             <Route path="*" element={<NotFound />} />
