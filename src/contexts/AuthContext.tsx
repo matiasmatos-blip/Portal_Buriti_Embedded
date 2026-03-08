@@ -2,11 +2,19 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 
 export type UserRole = "admin" | "gerente" | "analista" | "visualizador";
 
+export interface Report {
+  id: string;
+  workspaceId: string;
+  name: string;
+  description: string;
+}
+
 export interface Workspace {
   id: string;
   name: string;
   icon: string;
   allowedRoles: UserRole[];
+  reports: Report[];
 }
 
 export interface User {
@@ -17,17 +25,62 @@ export interface User {
   avatar?: string;
 }
 
-// Mock workspaces - will come from database later
+// Mock workspaces with reports
 export const WORKSPACES: Workspace[] = [
-  { id: "1", name: "Vendas", icon: "TrendingUp", allowedRoles: ["admin", "gerente", "analista", "visualizador"] },
-  { id: "2", name: "Financeiro", icon: "DollarSign", allowedRoles: ["admin", "gerente", "analista"] },
-  { id: "3", name: "Empreendimentos", icon: "Building2", allowedRoles: ["admin", "gerente", "analista", "visualizador"] },
-  { id: "4", name: "Marketing", icon: "Megaphone", allowedRoles: ["admin", "gerente"] },
-  { id: "5", name: "RH", icon: "Users", allowedRoles: ["admin", "gerente"] },
-  { id: "6", name: "Administrativo", icon: "Settings", allowedRoles: ["admin"] },
+  {
+    id: "1", name: "Vendas", icon: "TrendingUp",
+    allowedRoles: ["admin", "gerente", "analista", "visualizador"],
+    reports: [
+      { id: "1-1", workspaceId: "1", name: "Recebimento de Parcelas", description: "Acompanhamento de recebimentos e inadimplência por empreendimento" },
+      { id: "1-2", workspaceId: "1", name: "Projeção de Distratos", description: "Análise preditiva de cancelamentos e impacto financeiro" },
+      { id: "1-3", workspaceId: "1", name: "Funil de Vendas", description: "Pipeline completo de leads até fechamento de contrato" },
+      { id: "1-4", workspaceId: "1", name: "Performance de Corretores", description: "Ranking e métricas individuais da equipe de vendas" },
+    ],
+  },
+  {
+    id: "2", name: "Financeiro", icon: "DollarSign",
+    allowedRoles: ["admin", "gerente", "analista"],
+    reports: [
+      { id: "2-1", workspaceId: "2", name: "Fluxo de Caixa", description: "Entradas e saídas consolidadas por período" },
+      { id: "2-2", workspaceId: "2", name: "DRE Gerencial", description: "Demonstração de resultados por empreendimento" },
+      { id: "2-3", workspaceId: "2", name: "Contas a Pagar", description: "Visão detalhada de compromissos e vencimentos" },
+    ],
+  },
+  {
+    id: "3", name: "Empreendimentos", icon: "Building2",
+    allowedRoles: ["admin", "gerente", "analista", "visualizador"],
+    reports: [
+      { id: "3-1", workspaceId: "3", name: "Mapa de Lotes", description: "Situação de cada lote: vendido, disponível ou reservado" },
+      { id: "3-2", workspaceId: "3", name: "Andamento de Obras", description: "Cronograma físico-financeiro dos empreendimentos" },
+      { id: "3-3", workspaceId: "3", name: "Indicadores por Empreendimento", description: "KPIs consolidados de cada projeto" },
+    ],
+  },
+  {
+    id: "4", name: "Marketing", icon: "Megaphone",
+    allowedRoles: ["admin", "gerente"],
+    reports: [
+      { id: "4-1", workspaceId: "4", name: "Campanhas Ativas", description: "Performance e ROI de cada campanha publicitária" },
+      { id: "4-2", workspaceId: "4", name: "Leads por Canal", description: "Origem e qualificação de leads por canal de captação" },
+    ],
+  },
+  {
+    id: "5", name: "RH", icon: "Users",
+    allowedRoles: ["admin", "gerente"],
+    reports: [
+      { id: "5-1", workspaceId: "5", name: "Quadro de Colaboradores", description: "Headcount, admissões e desligamentos" },
+      { id: "5-2", workspaceId: "5", name: "Indicadores de RH", description: "Turnover, absenteísmo e produtividade" },
+    ],
+  },
+  {
+    id: "6", name: "Administrativo", icon: "Settings",
+    allowedRoles: ["admin"],
+    reports: [
+      { id: "6-1", workspaceId: "6", name: "Contratos e Documentos", description: "Gestão documental e status de assinaturas" },
+      { id: "6-2", workspaceId: "6", name: "Indicadores Operacionais", description: "Métricas de eficiência dos processos internos" },
+    ],
+  },
 ];
 
-// Mock users
 const MOCK_USERS: Record<string, { password: string; user: User }> = {
   "admin@buriti.com": {
     password: "admin123",
@@ -53,9 +106,10 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   getVisibleWorkspaces: () => Workspace[];
-  favorites: string[];
-  toggleFavorite: (workspaceId: string) => void;
-  isFavorite: (workspaceId: string) => boolean;
+  favorites: string[]; // report IDs
+  toggleFavorite: (reportId: string) => void;
+  isFavorite: (reportId: string) => boolean;
+  getFavoriteReports: () => (Report & { workspaceName: string })[];
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -84,7 +138,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (entry && entry.password === password) {
       setUser(entry.user);
       localStorage.setItem("buriti_user", JSON.stringify(entry.user));
-      // Load user-specific favorites
       const userFavs = localStorage.getItem(`buriti_favorites_${entry.user.id}`);
       setFavorites(userFavs ? JSON.parse(userFavs) : []);
       setIsLoading(false);
@@ -105,11 +158,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return WORKSPACES.filter((w) => w.allowedRoles.includes(user.role));
   }, [user]);
 
-  const toggleFavorite = useCallback((workspaceId: string) => {
+  const toggleFavorite = useCallback((reportId: string) => {
     setFavorites((prev) => {
-      const next = prev.includes(workspaceId)
-        ? prev.filter((id) => id !== workspaceId)
-        : [...prev, workspaceId];
+      const next = prev.includes(reportId)
+        ? prev.filter((id) => id !== reportId)
+        : [...prev, reportId];
       if (user) {
         localStorage.setItem(`buriti_favorites_${user.id}`, JSON.stringify(next));
       }
@@ -117,12 +170,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, [user]);
 
-  const isFavorite = useCallback((workspaceId: string) => {
-    return favorites.includes(workspaceId);
+  const isFavorite = useCallback((reportId: string) => {
+    return favorites.includes(reportId);
   }, [favorites]);
 
+  const getFavoriteReports = useCallback(() => {
+    if (!user) return [];
+    const visibleWorkspaces = WORKSPACES.filter((w) => w.allowedRoles.includes(user.role));
+    const result: (Report & { workspaceName: string })[] = [];
+    for (const ws of visibleWorkspaces) {
+      for (const report of ws.reports) {
+        if (favorites.includes(report.id)) {
+          result.push({ ...report, workspaceName: ws.name });
+        }
+      }
+    }
+    return result;
+  }, [user, favorites]);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, getVisibleWorkspaces, favorites, toggleFavorite, isFavorite }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, getVisibleWorkspaces, favorites, toggleFavorite, isFavorite, getFavoriteReports }}>
       {children}
     </AuthContext.Provider>
   );
