@@ -53,6 +53,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   getVisibleWorkspaces: () => Workspace[];
+  favorites: string[];
+  toggleFavorite: (workspaceId: string) => void;
+  isFavorite: (workspaceId: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -69,15 +72,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : null;
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem("buriti_favorites");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
-    // Simulate network delay
     await new Promise((r) => setTimeout(r, 1500));
     const entry = MOCK_USERS[email.toLowerCase()];
     if (entry && entry.password === password) {
       setUser(entry.user);
       localStorage.setItem("buriti_user", JSON.stringify(entry.user));
+      // Load user-specific favorites
+      const userFavs = localStorage.getItem(`buriti_favorites_${entry.user.id}`);
+      setFavorites(userFavs ? JSON.parse(userFavs) : []);
       setIsLoading(false);
       return { success: true };
     }
@@ -87,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     setUser(null);
+    setFavorites([]);
     localStorage.removeItem("buriti_user");
   }, []);
 
@@ -95,8 +105,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return WORKSPACES.filter((w) => w.allowedRoles.includes(user.role));
   }, [user]);
 
+  const toggleFavorite = useCallback((workspaceId: string) => {
+    setFavorites((prev) => {
+      const next = prev.includes(workspaceId)
+        ? prev.filter((id) => id !== workspaceId)
+        : [...prev, workspaceId];
+      if (user) {
+        localStorage.setItem(`buriti_favorites_${user.id}`, JSON.stringify(next));
+      }
+      return next;
+    });
+  }, [user]);
+
+  const isFavorite = useCallback((workspaceId: string) => {
+    return favorites.includes(workspaceId);
+  }, [favorites]);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, getVisibleWorkspaces }}>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, getVisibleWorkspaces, favorites, toggleFavorite, isFavorite }}>
       {children}
     </AuthContext.Provider>
   );
