@@ -1,6 +1,6 @@
-import { TrendingUp, DollarSign, Building2, Megaphone, Users, Settings, LogOut, LayoutDashboard } from "lucide-react";
+import { TrendingUp, DollarSign, Building2, Megaphone, Users, Settings, LogOut, LayoutDashboard, Star } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useAuth, type Workspace } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo-buriti.png";
 import {
@@ -24,8 +24,9 @@ const iconMap: Record<string, React.ElementType> = {
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { user, logout, getVisibleWorkspaces } = useAuth();
+  const { user, logout, getVisibleWorkspaces, isFavorite } = useAuth();
   const workspaces = getVisibleWorkspaces();
+  const favoriteWorkspaces = workspaces.filter((ws) => isFavorite(ws.id));
 
   const roleLabel: Record<string, string> = {
     admin: "Administrador",
@@ -47,7 +48,7 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2">
-        {/* Dashboard */}
+        {/* Home */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -60,13 +61,55 @@ export function AppSidebar() {
                     className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
                   >
                     <LayoutDashboard className="h-4 w-4 mr-2" />
-                    {!collapsed && <span>Dashboard</span>}
+                    {!collapsed && <span>Início</span>}
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Favorites */}
+        {favoriteWorkspaces.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-widest font-bold px-3 mb-1">
+              {!collapsed && (
+                <span className="flex items-center gap-1.5">
+                  <Star className="h-3 w-3 fill-current" />
+                  Favoritos
+                </span>
+              )}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {favoriteWorkspaces.map((ws, i) => {
+                  const Icon = iconMap[ws.icon] || Building2;
+                  return (
+                    <motion.div
+                      key={ws.id}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.03 }}
+                    >
+                      <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                          <NavLink
+                            to={`/workspace/${ws.id}`}
+                            activeClassName="gradient-brand text-primary-foreground shadow-brand font-semibold"
+                            className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
+                          >
+                            <Icon className="h-4 w-4 mr-2 shrink-0" />
+                            {!collapsed && <span>{ws.name}</span>}
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </motion.div>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Workspaces */}
         <SidebarGroup>

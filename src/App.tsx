@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import Welcome from "./pages/Welcome";
 import WorkspaceView from "./pages/WorkspaceView";
 import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
@@ -24,7 +24,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route element={<DashboardLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Welcome />} />
               <Route path="/workspace/:id" element={<WorkspaceView />} />
               <Route path="/admin/users" element={<AdminUsers />} />
             </Route>

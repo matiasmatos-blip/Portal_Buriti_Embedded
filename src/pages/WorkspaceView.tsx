@@ -3,14 +3,15 @@ import { useAuth, WORKSPACES } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import { BuritiLoader } from "@/components/BuritiLoader";
 import { useState, useEffect } from "react";
-import { MonitorPlay } from "lucide-react";
+import { MonitorPlay, Star } from "lucide-react";
 
 const WorkspaceView = () => {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, isFavorite, toggleFavorite } = useAuth();
   const [loading, setLoading] = useState(true);
 
   const workspace = WORKSPACES.find((w) => w.id === id);
+  const favorited = workspace ? isFavorite(workspace.id) : false;
 
   useEffect(() => {
     setLoading(true);
@@ -28,11 +29,25 @@ const WorkspaceView = () => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
       >
-        <h1 className="text-2xl font-bold text-foreground">{workspace.name}</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Relatórios e dashboards do workspace
-        </p>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">{workspace.name}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Relatórios e dashboards do workspace
+          </p>
+        </div>
+        <button
+          onClick={() => toggleFavorite(workspace.id)}
+          className={`h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
+            favorited
+              ? "bg-primary/10 text-primary"
+              : "bg-muted/50 text-muted-foreground hover:text-primary hover:bg-primary/10"
+          }`}
+          title={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+        >
+          <Star className={`h-5 w-5 ${favorited ? "fill-primary" : ""}`} />
+        </button>
       </motion.div>
 
       <motion.div
