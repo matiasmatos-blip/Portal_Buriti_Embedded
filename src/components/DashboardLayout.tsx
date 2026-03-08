@@ -3,7 +3,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, Search, Bell } from "lucide-react";
+import { Menu, Search, Bell, Globe, Facebook, Instagram } from "lucide-react";
 
 export const DashboardLayout = () => {
   const { user } = useAuth();
@@ -33,7 +33,17 @@ export const DashboardLayout = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 ml-4">
+            <div className="flex items-center gap-2 ml-4">
+              <a href="https://btsa.com.br/empreendimentos/" target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all" title="Site">
+                <Globe size={17} />
+              </a>
+              <a href="https://www.facebook.com/brasilterrenos" target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all" title="Facebook">
+                <Facebook size={17} />
+              </a>
+              <a href="https://www.instagram.com/brasilterrenos" target="_blank" rel="noopener noreferrer" className="h-9 w-9 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all" title="Instagram">
+                <Instagram size={17} />
+              </a>
+              <div className="w-px h-6 bg-border/50 mx-1" />
               <button className="h-9 w-9 rounded-xl bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all">
                 <Bell size={18} />
               </button>
