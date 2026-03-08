@@ -62,7 +62,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Workspaces */}
-        <SidebarGroup defaultOpen>
+        <SidebarGroup>
           <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-wider font-bold px-3">
             {!collapsed && "Workspaces"}
           </SidebarGroupLabel>
