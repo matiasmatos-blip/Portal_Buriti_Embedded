@@ -112,11 +112,39 @@ interface AuthContextType {
   getFavoriteReports: () => (Report & { workspaceName: string })[];
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+type AuthGlobalStore = typeof globalThis & {
+  __BURITI_AUTH_CONTEXT__?: React.Context<AuthContextType | null>;
+};
+
+const authGlobalStore = globalThis as AuthGlobalStore;
+
+const AuthContext =
+  authGlobalStore.__BURITI_AUTH_CONTEXT__ ?? createContext<AuthContextType | null>(null);
+
+if (import.meta.env.DEV) {
+  authGlobalStore.__BURITI_AUTH_CONTEXT__ = AuthContext;
+}
+
+const FALLBACK_AUTH_CONTEXT: AuthContextType = {
+  user: null,
+  isLoading: false,
+  login: async () => ({ success: false, error: "AuthProvider indisponível" }),
+  logout: () => undefined,
+  getVisibleWorkspaces: () => [],
+  favorites: [],
+  toggleFavorite: () => undefined,
+  isFavorite: () => false,
+  getFavoriteReports: () => [],
+};
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  if (!ctx) {
+    if (import.meta.env.DEV) {
+      console.warn("[AuthContext] Hook usado sem provider ativo. Fallback aplicado.");
+    }
+    return FALLBACK_AUTH_CONTEXT;
+  }
   return ctx;
 };
 
