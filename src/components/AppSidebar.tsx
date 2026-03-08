@@ -1,6 +1,5 @@
-import { TrendingUp, DollarSign, Building2, Megaphone, Users, Settings, LogOut, ChevronLeft, LayoutDashboard } from "lucide-react";
+import { TrendingUp, DollarSign, Building2, Megaphone, Users, Settings, LogOut, LayoutDashboard } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
 import { useAuth, type Workspace } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo-buriti.png";
@@ -23,9 +22,8 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
   const { user, logout, getVisibleWorkspaces } = useAuth();
   const workspaces = getVisibleWorkspaces();
 
@@ -37,10 +35,14 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r-0">
-      <SidebarHeader className="p-4">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
+      <SidebarHeader className="p-4 pb-6">
         <div className="flex items-center gap-3">
-          <img src={logo} alt="Buriti" className={`${collapsed ? "h-8" : "h-10"} w-auto transition-all duration-300`} />
+          <img
+            src={logo}
+            alt="Buriti"
+            className={`${collapsed ? "h-8" : "h-11"} w-auto transition-all duration-300`}
+          />
         </div>
       </SidebarHeader>
 
@@ -51,7 +53,12 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <NavLink to="/dashboard" end activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
+                  <NavLink
+                    to="/dashboard"
+                    end
+                    activeClassName="gradient-brand text-primary-foreground shadow-brand font-semibold"
+                    className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
+                  >
                     <LayoutDashboard className="h-4 w-4 mr-2" />
                     {!collapsed && <span>Dashboard</span>}
                   </NavLink>
@@ -63,7 +70,7 @@ export function AppSidebar() {
 
         {/* Workspaces */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-wider font-bold px-3">
+          <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-widest font-bold px-3 mb-1">
             {!collapsed && "Workspaces"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -73,16 +80,16 @@ export function AppSidebar() {
                 return (
                   <motion.div
                     key={ws.id}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    transition={{ delay: i * 0.04 }}
                   >
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <NavLink
                           to={`/workspace/${ws.id}`}
-                          activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold"
-                          className="hover:bg-sidebar-accent/50 transition-colors rounded-md"
+                          activeClassName="gradient-brand text-primary-foreground shadow-brand font-semibold"
+                          className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
                         >
                           <Icon className="h-4 w-4 mr-2 shrink-0" />
                           {!collapsed && <span>{ws.name}</span>}
@@ -99,14 +106,18 @@ export function AppSidebar() {
         {/* Admin */}
         {user?.role === "admin" && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-wider font-bold px-3">
+            <SidebarGroupLabel className="text-sidebar-muted text-[10px] uppercase tracking-widest font-bold px-3 mb-1">
               {!collapsed && "Administração"}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/admin/users" activeClassName="bg-sidebar-accent text-sidebar-primary font-semibold">
+                    <NavLink
+                      to="/admin/users"
+                      activeClassName="gradient-brand text-primary-foreground shadow-brand font-semibold"
+                      className="rounded-xl transition-all duration-200 hover:bg-sidebar-accent"
+                    >
                       <Users className="h-4 w-4 mr-2" />
                       {!collapsed && <span>Usuários</span>}
                     </NavLink>
@@ -121,11 +132,11 @@ export function AppSidebar() {
       <SidebarFooter className="p-3 border-t border-sidebar-border">
         {!collapsed && user && (
           <motion.div
-            className="flex items-center gap-3 px-2 mb-2"
+            className="flex items-center gap-3 px-2 mb-3 py-2 rounded-xl bg-muted/50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="h-8 w-8 rounded-full gradient-brand flex items-center justify-center text-xs font-bold text-primary-foreground">
+            <div className="h-9 w-9 rounded-xl gradient-brand flex items-center justify-center text-xs font-bold text-primary-foreground shadow-brand">
               {user.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
             </div>
             <div className="flex-1 min-w-0">
@@ -138,7 +149,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={logout}
-              className="text-sidebar-muted hover:text-accent hover:bg-accent/10 transition-colors"
+              className="text-sidebar-muted hover:text-accent hover:bg-accent/10 transition-all rounded-xl"
             >
               <LogOut className="h-4 w-4 mr-2" />
               {!collapsed && <span>Sair</span>}

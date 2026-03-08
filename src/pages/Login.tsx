@@ -25,39 +25,48 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-background">
       {/* Left - Branding */}
       <motion.div
-        className="hidden lg:flex lg:w-1/2 gradient-dark relative overflow-hidden items-center justify-center"
+        className="hidden lg:flex lg:w-[45%] relative overflow-hidden items-center justify-center"
         initial={{ x: -40, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5">
+        {/* Layered gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/8 via-transparent to-transparent" />
+
+        {/* Decorative blurred shapes */}
+        <motion.div
+          className="absolute top-16 right-16 h-72 w-72 rounded-full bg-primary/15 blur-[80px]"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.6, 0.4] }}
+          transition={{ duration: 7, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-24 left-12 h-56 w-56 rounded-full bg-accent/10 blur-[60px]"
+          animate={{ scale: [1.1, 1, 1.1], opacity: [0.2, 0.35, 0.2] }}
+          transition={{ duration: 9, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-96 w-96 rounded-full bg-primary/8 blur-[100px]"
+          animate={{ scale: [0.9, 1.05, 0.9] }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
+
+        {/* Dot pattern */}
+        <div className="absolute inset-0 opacity-[0.03]">
           <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, hsl(82 56% 45%) 1px, transparent 0)`,
-            backgroundSize: '40px 40px',
+            backgroundImage: `radial-gradient(circle at 1.5px 1.5px, hsl(82 56% 35%) 1px, transparent 0)`,
+            backgroundSize: '32px 32px',
           }} />
         </div>
-        
-        {/* Decorative shapes */}
-        <motion.div
-          className="absolute top-20 right-20 h-64 w-64 rounded-full bg-primary/10 blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 6, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-20 left-20 h-48 w-48 rounded-full bg-accent/10 blur-3xl"
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
 
         <div className="relative z-10 flex flex-col items-center gap-8 px-12 text-center">
           <motion.img
             src={logo}
             alt="Buriti Empreendimentos"
-            className="h-24 w-auto drop-shadow-2xl"
+            className="h-28 w-auto"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
@@ -67,10 +76,10 @@ const Login = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <h2 className="text-2xl font-bold text-sidebar-foreground">
+            <h2 className="text-2xl font-bold text-foreground">
               Portal de Inteligência
             </h2>
-            <p className="mt-2 text-sidebar-muted text-sm max-w-sm">
+            <p className="mt-3 text-muted-foreground text-sm max-w-sm leading-relaxed">
               Acompanhe indicadores, métricas e dashboards de todos os empreendimentos em um único lugar.
             </p>
           </motion.div>
@@ -79,7 +88,7 @@ const Login = () => {
 
       {/* Right - Login Form */}
       <motion.div
-        className="flex flex-1 items-center justify-center p-6 sm:p-12 bg-background"
+        className="flex flex-1 items-center justify-center p-6 sm:p-12"
         initial={{ x: 40, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -117,7 +126,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="h-11"
+                className="h-11 rounded-xl bg-muted/30 border-border/60 focus:bg-card transition-colors"
               />
             </div>
 
@@ -131,7 +140,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-11 pr-10"
+                  className="h-11 pr-10 rounded-xl bg-muted/30 border-border/60 focus:bg-card transition-colors"
                 />
                 <button
                   type="button"
@@ -151,7 +160,7 @@ const Login = () => {
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">
+                  <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2">
                     {error}
                   </p>
                 </motion.div>
@@ -161,7 +170,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 gradient-brand text-primary-foreground font-semibold shadow-brand hover:opacity-90 transition-opacity"
+              className="w-full h-11 rounded-xl gradient-brand text-primary-foreground font-semibold shadow-brand hover:opacity-90 transition-opacity"
             >
               {isLoading ? (
                 <BuritiLoader text="" />
@@ -175,7 +184,7 @@ const Login = () => {
           </motion.form>
 
           <motion.div
-            className="mt-8 rounded-lg border border-border bg-muted/50 p-4"
+            className="mt-8 rounded-2xl border border-border/50 bg-muted/30 backdrop-blur-sm p-4"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}

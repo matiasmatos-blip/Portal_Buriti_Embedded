@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import { TrendingUp, DollarSign, Building2, Users, ArrowUpRight } from "lucide-react";
+import { TrendingUp, DollarSign, Building2, Users, ArrowUpRight, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const statCards = [
@@ -33,47 +33,63 @@ const Dashboard = () => {
             key={stat.label}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
-            className="rounded-xl border border-border bg-card p-5 shadow-card hover:shadow-card-hover transition-shadow"
+            transition={{ delay: i * 0.07 }}
+            className="group relative rounded-2xl border border-border/60 bg-card p-5 shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <stat.icon className="h-5 w-5 text-primary" />
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/[0.03] to-transparent rounded-2xl" />
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center">
+                  <stat.icon className="h-5 w-5 text-primary" />
+                </div>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  stat.positive
+                    ? "bg-primary/10 text-primary"
+                    : "bg-accent/10 text-accent"
+                }`}>
+                  {stat.change}
+                </span>
               </div>
-              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                stat.positive 
-                  ? "bg-primary/10 text-primary"
-                  : "bg-accent/10 text-accent"
-              }`}>
-                {stat.change}
-              </span>
+              <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+              <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
             </div>
-            <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
           </motion.div>
         ))}
       </div>
 
       {/* Workspaces Grid */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-4">Seus Workspaces</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-foreground">Seus Workspaces</h2>
+          <span className="text-xs text-muted-foreground">{workspaces.length} disponíveis</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {workspaces.map((ws, i) => (
             <motion.button
               key={ws.id}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.06 }}
+              transition={{ delay: 0.3 + i * 0.05 }}
               onClick={() => navigate(`/workspace/${ws.id}`)}
-              className="group rounded-xl border border-border bg-card p-5 shadow-card hover:shadow-card-hover hover:border-primary/30 transition-all text-left"
+              className="group relative rounded-2xl border border-border/60 bg-card p-5 shadow-card hover:shadow-card-hover transition-all duration-300 text-left overflow-hidden"
             >
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-foreground">{ws.name}</h3>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              {/* Hover gradient */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-primary/[0.04] to-transparent rounded-2xl" />
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center">
+                    <BarChart3 className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">{ws.name}</h3>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Relatórios e dashboards
+                    </p>
+                  </div>
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Clique para acessar os relatórios
-              </p>
             </motion.button>
           ))}
         </div>
