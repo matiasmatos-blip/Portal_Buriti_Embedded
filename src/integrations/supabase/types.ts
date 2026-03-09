@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      powerbi_reports: {
+        Row: {
+          created_at: string
+          description: string | null
+          embed_url: string
+          id: string
+          is_active: boolean
+          report_key: string
+          report_name: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          embed_url: string
+          id?: string
+          is_active?: boolean
+          report_key: string
+          report_name: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          embed_url?: string
+          id?: string
+          is_active?: boolean
+          report_key?: string
+          report_name?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
