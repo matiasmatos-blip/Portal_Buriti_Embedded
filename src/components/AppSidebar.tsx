@@ -3,6 +3,7 @@ import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 import logo from "@/assets/logo-buriti.png";
+import logoIcon from "@/assets/logo-icon.png";
 import {
   Sidebar,
   SidebarContent,
@@ -38,11 +39,11 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className="p-4 pb-6">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center">
           <img
-            src={logo}
+            src={collapsed ? logoIcon : logo}
             alt="Buriti"
-            className={`${collapsed ? "h-8" : "h-11"} w-auto transition-all duration-300`}
+            className={`${collapsed ? "h-7 w-7 object-contain" : "h-11 w-auto"} transition-all duration-300`}
           />
         </div>
       </SidebarHeader>
