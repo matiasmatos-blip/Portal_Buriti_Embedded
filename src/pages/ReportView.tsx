@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import { BuritiLoader } from "@/components/BuritiLoader";
 import { useState, useEffect } from "react";
 import { MonitorPlay, Star, ChevronLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ReportView = () => {
   const { id, reportId } = useParams();
   const { user, isFavorite, toggleFavorite } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [embedUrl, setEmbedUrl] = useState<string | null>(null);
 
   const workspace = WORKSPACES.find((w) => w.id === id);
   const report = workspace?.reports.find((r) => r.id === reportId);
@@ -17,8 +19,22 @@ const ReportView = () => {
 
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
+    setEmbedUrl(null);
+
+    const fetchEmbed = async () => {
+      if (!reportId) return;
+      const { data } = await supabase
+        .from("powerbi_reports")
+        .select("embed_url")
+        .eq("report_key", reportId)
+        .eq("is_active", true)
+        .maybeSingle();
+      
+      if (data?.embed_url) setEmbedUrl(data.embed_url);
+      setLoading(false);
+    };
+
+    fetchEmbed();
   }, [reportId]);
 
   if (!workspace || !report) return <Navigate to="/dashboard" replace />;
